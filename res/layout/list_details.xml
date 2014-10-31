@@ -1,0 +1,23 @@
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="40dp"
+    android:clickable="true"
+    android:orientation="vertical"
+    tools:context=".MainActivity" >
+
+    <TextView
+        android:id="@+id/textView1"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:background="?android:attr/selectableItemBackground"
+        android:drawableStart="@drawable/ic_nxt"
+        android:drawablePadding="5dp"
+        android:paddingStart="40dp"
+    	android:paddingEnd="0dp"
+        android:gravity="center_vertical"
+        android:textSize="14sp"
+        android:textStyle="bold" >
+    </TextView>
+
+</LinearLayout> 

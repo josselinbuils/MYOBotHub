@@ -1,0 +1,7 @@
+<resources>
+
+    <string name="app_name">MYOBotHub</string>
+    <string name="addMyo">Ajouter un Myo</string>
+    <string name="addNxt">Ajouter un Nxt</string>
+
+</resources>
