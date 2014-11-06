@@ -13,6 +13,13 @@
         android:layout_height="0dp"
         android:layout_weight="1" >
     </ExpandableListView>
+    
+    <TextView
+        android:id="@+id/stateView"
+        android:layout_width="fill_parent"
+        android:layout_height="wrap_content"
+        android:layout_gravity="start|bottom"
+	/>
 
     <Button
         android:id="@+id/addMyoButton"

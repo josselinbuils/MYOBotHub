@@ -10,6 +10,7 @@ import android.bluetooth.BluetoothAdapter;
 import android.bluetooth.BluetoothDevice;
 import android.bluetooth.BluetoothSocket;
 import android.content.DialogInterface;
+import android.graphics.Color;
 import android.os.Bundle;
 import android.util.SparseArray;
 import android.view.View;
@@ -18,6 +19,7 @@ import android.widget.AdapterView;
 import android.widget.AdapterView.OnItemLongClickListener;
 import android.widget.Button;
 import android.widget.ExpandableListView;
+import android.widget.TextView;
 
 import com.thalmic.myo.AbstractDeviceListener;
 import com.thalmic.myo.DeviceListener;
@@ -34,6 +36,7 @@ public class MainActivity extends Activity {
 	private ExpandableListView listConnectors;
 	private MyExpandableListAdapter adapter;
 	private Hub hub;
+	private TextView stateView;
 
 	/* Évènements de l'application */
 	
@@ -41,6 +44,8 @@ public class MainActivity extends Activity {
 	public void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
 		setContentView(R.layout.activity_main);
+		
+		stateView = (TextView) findViewById(R.id.stateView);
 
 		// Bouton "Ajouter un Myo"
 		addMyoButton = (Button) findViewById(R.id.addMyoButton);
@@ -166,8 +171,6 @@ public class MainActivity extends Activity {
 		
 		// Initialisation du HUB de gestion des Myos
 		if (!hub.init(activity)) {
-			//stateView.setTextColor(Color.RED);
-			//stateView.setText("État : échec d'initialisation du hub");
 		    finish();
 		    return;
 		} else {
@@ -281,6 +284,10 @@ public class MainActivity extends Activity {
 			// Met à jour la liste des connecteurs
 			updateConnectorsList();
 			
+			// Affichage de l'état
+			stateView.setTextColor(Color.rgb(40, 146, 194));
+			stateView.setText("État : " + myo.getName() + " connecté");
+			
 			// Fait vibrer le Myo pour indiquer la connexion
 			myo.vibrate(VibrationType.SHORT);
 		}
@@ -292,6 +299,10 @@ public class MainActivity extends Activity {
 			if (connector != null) {
 				// Déconnecte les Nxts reliés au Myo
 				connector.closeNxts();
+				
+				// Affichage de l'état
+				stateView.setTextColor(Color.RED);
+				stateView.setText("État : " + myo.getName() + " déconnecté");
 	
 				// Supprime le connecteur
 				connectors.remove(connector);
@@ -333,6 +344,10 @@ public class MainActivity extends Activity {
 					p = "WAVE_OUT";
 					break;
 				}
+				
+				// Affichage de l'état
+				stateView.setTextColor(Color.rgb(40, 146, 194));
+				stateView.setText("État : " + myo.getName() + " -> " + p);
 
 				// Définie la nouvelle pose dans le connecteur
 				connector.setPose(p);
@@ -347,6 +362,11 @@ public class MainActivity extends Activity {
 	private OnClickListener addMyoButtonClickListener = new OnClickListener() {
 		@Override
 		public void onClick(View v) {
+			// Affichage de l'état
+			stateView.setTextColor(Color.rgb(40, 146, 194));
+			stateView.setText("État : connexion au myo...");
+			
+			// Appairage avec le MYO le plus proche
 			hub.pairWithAdjacentMyo();
 		}
 	};
@@ -396,8 +416,6 @@ public class MainActivity extends Activity {
 						ArrayList<CharSequence> bondedDevicesNames = new ArrayList<CharSequence>();
 						final ArrayList<BluetoothDevice> bondedDevicesList = new ArrayList<BluetoothDevice>();
 						
-						System.out.println("ttest00");
-						
 						// Ajoute à la liste les péripériques qui n'ont pas déjà été ajoutés à l'application
 						for (BluetoothDevice device : bondedDevices) {
 							boolean flag = true;
@@ -423,14 +441,22 @@ public class MainActivity extends Activity {
 							public void onClick(DialogInterface dialog, int which) {
 								BluetoothDevice nxt = bondedDevicesList.get(which);
 								BluetoothSocket socket = null;
+								
+								// Affichage de l'état
+								stateView.setTextColor(Color.rgb(40, 146, 194));
+								stateView.setText("État : connexion à " + nxt.getName() + "...");
 
 								try {
 									// Tente de se connecter au Nxt
 									socket = nxt.createRfcommSocketToServiceRecord(nxt.getUuids()[0].getUuid());
-									socket.connect();	
+									socket.connect();
 									
 									// Ajoute le Nxt au connecteur
 									connector.addNxt(nxt, socket);
+									
+									// Affichage de l'état
+									stateView.setTextColor(Color.rgb(40, 146, 194));
+									stateView.setText("État : " + nxt.getName() + " connecté");
 									
 									// Met à jour la liste des connecteurs
 									updateConnectorsList();
