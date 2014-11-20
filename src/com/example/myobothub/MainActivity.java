@@ -123,7 +123,7 @@ public class MainActivity extends Activity {
 							} else {
 								
 								// Déconnecte le Myo
-								hub.unpair(dConnector.getMyo().getMacAddress());
+								hub.detach(dConnector.getMyo().getMacAddress());
 								
 								// Déconnecte les Nxts reliés au Myo
 								dConnector.closeNxts();
@@ -183,7 +183,7 @@ public class MainActivity extends Activity {
 		for (Connector connector : connectors) {
 			
 			// Déconnecte le Myo
-			hub.unpair(connector.getMyo().getMacAddress());
+			hub.detach(connector.getMyo().getMacAddress());
 			
 			// Ferme la connexion de tous les Nxts associés au connecteur et les retire du connecteur
 			connector.closeNxts();
@@ -367,7 +367,7 @@ public class MainActivity extends Activity {
 			stateView.setText("État : connexion au myo...");
 			
 			// Appairage avec le MYO le plus proche
-			hub.pairWithAdjacentMyo();
+			hub.attachToAdjacentMyo();
 		}
 	};
 	
