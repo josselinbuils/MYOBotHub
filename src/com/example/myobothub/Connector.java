@@ -93,15 +93,50 @@ public class Connector {
 	}
 	
 	// Envoie la dernière pose à tous les Nxts associés au connecteur
-	public void sendPoseToNxts() {
+	public boolean sendPoseToNxts() {
+		boolean res = true;
+		
 		for (BluetoothSocket socket : sockets) {
 			try {
-				socket.getOutputStream().write(pose.getBytes());
+				byte code = 0;
+				
+				switch (pose) {
+				case "FINGERS_SPREAD":
+					code = 1;
+					break;
+				case "FIST":
+					code = 2;
+					break;
+				case "REST":
+					break;
+				case "THUMB_TO_PINKY":
+					code = 3;
+					break;
+				case "UNKNOWN":
+					code = 4;
+					break;
+				case "WAVE_IN":
+					code = 5;
+					break;
+				case "WAVE_OUT":
+					code = 6;
+					break;
+				}
+				
+				socket.getOutputStream().write(code);
 			} catch (IOException e) {
 				e.printStackTrace();
-				MainActivity.showError(activity, "Impossible d'envoyer la dernière pose à " + nxts.get(sockets.indexOf(socket)).getName() + ".");
+
+				BluetoothDevice nxt = nxts.get(sockets.indexOf(socket));
+
+				MainActivity.showError(activity, "Erreur de communication avec " + nxt.getName() + ".");
+				this.closeNxt(nxt);
+				
+				res = false;
 			}
 		}
+		
+		return res;
 	}
 	
 	// Modifie la pose du Myo associé au connecteur

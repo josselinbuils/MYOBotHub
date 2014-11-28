@@ -353,7 +353,9 @@ public class MainActivity extends Activity {
 				connector.setPose(p);
 				
 				// Envoie la pose à tous les Nxts associés au connecteur
-				connector.sendPoseToNxts();
+				if (connector.sendPoseToNxts() == false) { // Erreur de communication
+					updateConnectorsList();
+				}
 			}
 		}
 	};
