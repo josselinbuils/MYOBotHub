@@ -107,8 +107,6 @@ public class Connector {
 				case "FIST":
 					code = 2;
 					break;
-				case "REST":
-					break;
 				case "THUMB_TO_PINKY":
 					code = 3;
 					break;
@@ -120,6 +118,9 @@ public class Connector {
 					break;
 				case "WAVE_OUT":
 					code = 6;
+					break;
+				case "REST":
+					code = 7;
 					break;
 				}
 				
