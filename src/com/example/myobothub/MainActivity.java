@@ -22,12 +22,14 @@ import android.widget.ExpandableListView;
 import android.widget.TextView;
 
 import com.thalmic.myo.AbstractDeviceListener;
+import com.thalmic.myo.Arm;
 import com.thalmic.myo.DeviceListener;
 import com.thalmic.myo.Hub;
+import com.thalmic.myo.Hub.LockingPolicy;
 import com.thalmic.myo.Myo;
-import com.thalmic.myo.Myo.UnlockType;
 import com.thalmic.myo.Myo.VibrationType;
 import com.thalmic.myo.Pose;
+import com.thalmic.myo.XDirection;
 
 public class MainActivity extends Activity {
 	private Activity activity = this;
@@ -176,6 +178,7 @@ public class MainActivity extends Activity {
 		    return;
 		} else {
 			hub.addListener(mListener);
+			hub.setLockingPolicy(LockingPolicy.NONE);
 		}
 	}
 	
@@ -277,6 +280,7 @@ public class MainActivity extends Activity {
 	
 	// Écouteur des MYO
 	private DeviceListener mListener = new AbstractDeviceListener() {
+		
 		@Override
 		public void onConnect(Myo myo, long timestamp) {
 			// Crée un connecteur
@@ -308,11 +312,6 @@ public class MainActivity extends Activity {
 				// Supprime le connecteur
 				connectors.remove(connector);
 			}
-		}
-
-		@Override
-		public void onLock (Myo myo, long timestamp) {
-			myo.unlock(UnlockType.HOLD);
 		}
 
 		@Override
