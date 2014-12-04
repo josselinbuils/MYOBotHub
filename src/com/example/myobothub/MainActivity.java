@@ -331,8 +331,8 @@ public class MainActivity extends Activity {
 				case REST:
 					p = "REST";
 					break;
-				case THUMB_TO_PINKY:
-					p = "THUMB_TO_PINKY";
+				case DOUBLE_TAP:
+					p = "DOUBLE_TAP";
 					break;
 				case UNKNOWN:
 					p = "UNKNOWN";

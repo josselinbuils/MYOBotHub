@@ -107,7 +107,7 @@ public class Connector {
 				case "FIST":
 					code = 2;
 					break;
-				case "THUMB_TO_PINKY":
+				case "DOUBLE_TAP":
 					code = 3;
 					break;
 				case "UNKNOWN":
