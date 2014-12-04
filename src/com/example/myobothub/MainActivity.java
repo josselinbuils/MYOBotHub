@@ -25,6 +25,7 @@ import com.thalmic.myo.AbstractDeviceListener;
 import com.thalmic.myo.DeviceListener;
 import com.thalmic.myo.Hub;
 import com.thalmic.myo.Myo;
+import com.thalmic.myo.Myo.UnlockType;
 import com.thalmic.myo.Myo.VibrationType;
 import com.thalmic.myo.Pose;
 
@@ -307,6 +308,11 @@ public class MainActivity extends Activity {
 				// Supprime le connecteur
 				connectors.remove(connector);
 			}
+		}
+
+		@Override
+		public void onLock (Myo myo, long timestamp) {
+			myo.unlock(UnlockType.HOLD);
 		}
 
 		@Override
