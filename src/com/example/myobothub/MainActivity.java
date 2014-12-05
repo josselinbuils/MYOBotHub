@@ -1,6 +1,11 @@
 package com.example.myobothub;
 
 import java.io.IOException;
+import java.io.InputStream;
+import java.io.InputStreamReader;
+import java.io.Reader;
+import java.net.HttpURLConnection;
+import java.net.URL;
 import java.util.ArrayList;
 import java.util.Set;
 
@@ -11,6 +16,7 @@ import android.bluetooth.BluetoothDevice;
 import android.bluetooth.BluetoothSocket;
 import android.content.DialogInterface;
 import android.graphics.Color;
+import android.os.AsyncTask;
 import android.os.Bundle;
 import android.util.SparseArray;
 import android.view.View;
@@ -22,14 +28,12 @@ import android.widget.ExpandableListView;
 import android.widget.TextView;
 
 import com.thalmic.myo.AbstractDeviceListener;
-import com.thalmic.myo.Arm;
 import com.thalmic.myo.DeviceListener;
 import com.thalmic.myo.Hub;
 import com.thalmic.myo.Hub.LockingPolicy;
 import com.thalmic.myo.Myo;
 import com.thalmic.myo.Myo.VibrationType;
 import com.thalmic.myo.Pose;
-import com.thalmic.myo.XDirection;
 
 public class MainActivity extends Activity {
 	private Activity activity = this;
@@ -461,6 +465,9 @@ public class MainActivity extends Activity {
 									// Ajoute le Nxt au connecteur
 									connector.addNxt(nxt, socket);
 									
+									// Récupération et envoi du code
+									new DownloadURL(connector, socket).execute("http://josselinbuils.fr/myop/php/api.php?action=getUserProgram&user=myobot");
+									
 									// Affichage de l'état
 									stateView.setTextColor(Color.rgb(40, 146, 194));
 									stateView.setText("État : " + nxt.getName() + " connecté");
@@ -468,7 +475,6 @@ public class MainActivity extends Activity {
 									// Met à jour la liste des connecteurs
 									updateConnectorsList();
 									listConnectors.expandGroup(groupPosition);
-								
 								} catch (IOException e) {
 									e.printStackTrace();
 									showError(activity, "Impossible de se connecter à " + nxt.getName() + ", vérifiez que le bluetooth est activé sur le NXT et qu'il est appairé avec cet appareil.");
@@ -486,4 +492,54 @@ public class MainActivity extends Activity {
 			}
 		}
 	};
+	
+	private class DownloadURL extends AsyncTask<String, Void, String> {
+		Connector connector;
+		BluetoothSocket socket;
+		
+		public DownloadURL(Connector connector, BluetoothSocket socket) {
+			this.connector = connector;
+			this.socket = socket;
+		}
+
+		@Override
+		protected String doInBackground(String... urls) {
+			try {
+				InputStream is = null;
+				int len = 500;
+
+				try {
+					URL url = new URL(urls[0]);
+					HttpURLConnection conn = (HttpURLConnection) url.openConnection();
+					conn.setReadTimeout(10000);
+					conn.setConnectTimeout(15000);
+					conn.setRequestMethod("GET");
+					conn.setDoInput(true);
+					conn.connect();
+					is = conn.getInputStream();
+					Reader reader = new InputStreamReader(is, "UTF-8");
+					char[] buffer = new char[len];
+					reader.read(buffer);
+					String contentAsString = new String(buffer);
+					return contentAsString;
+
+				} finally {
+					if (is != null) {
+						is.close();
+					}
+				}
+			} catch (IOException e) {
+				e.printStackTrace();
+				return "";
+			}
+		}
+
+		@Override
+		protected void onPostExecute(String result) {
+			// Envoi du programme
+			connector.sendProgram(result, socket);
+			stateView.setText("État : programme envoyé");
+		}
+	}
+
 }

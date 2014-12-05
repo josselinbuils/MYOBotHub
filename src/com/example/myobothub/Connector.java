@@ -15,6 +15,7 @@ public class Connector {
 	private ArrayList<BluetoothSocket> sockets;
 	private Myo myo;
 	private String pose;
+	private boolean sendingProgram = false;
 	
 	// Constructeur
 	public Connector(Activity activity, Myo myo) {
@@ -95,51 +96,69 @@ public class Connector {
 	// Envoie la dernière pose à tous les Nxts associés au connecteur
 	public boolean sendPoseToNxts() {
 		boolean res = true;
-		
-		for (BluetoothSocket socket : sockets) {
-			try {
-				byte code = 0;
-				
-				switch (pose) {
-				case "FINGERS_SPREAD":
-					code = 1;
-					break;
-				case "FIST":
-					code = 2;
-					break;
-				case "DOUBLE_TAP":
-					code = 3;
-					break;
-				case "UNKNOWN":
-					code = 4;
-					break;
-				case "WAVE_IN":
-					code = 5;
-					break;
-				case "WAVE_OUT":
-					code = 6;
-					break;
-				case "REST":
-					code = 7;
-					break;
+
+		if (!sendingProgram) {
+			for (BluetoothSocket socket : sockets) {
+				try {
+					byte code = 0;
+					
+					switch (pose) {
+					case "FINGERS_SPREAD":
+						code = 1;
+						break;
+					case "FIST":
+						code = 2;
+						break;
+					case "DOUBLE_TAP":
+						code = 3;
+						break;
+					case "UNKNOWN":
+						code = 4;
+						break;
+					case "WAVE_IN":
+						code = 5;
+						break;
+					case "WAVE_OUT":
+						code = 6;
+						break;
+					case "REST":
+						code = 7;
+						break;
+					}
+					
+					socket.getOutputStream().write(code);
+				} catch (IOException e) {
+					e.printStackTrace();
+	
+					BluetoothDevice nxt = nxts.get(sockets.indexOf(socket));
+	
+					MainActivity.showError(activity, "Erreur de communication avec " + nxt.getName() + ".");
+					this.closeNxt(nxt);
+					
+					res = false;
 				}
-				
-				socket.getOutputStream().write(code);
-			} catch (IOException e) {
-				e.printStackTrace();
-
-				BluetoothDevice nxt = nxts.get(sockets.indexOf(socket));
-
-				MainActivity.showError(activity, "Erreur de communication avec " + nxt.getName() + ".");
-				this.closeNxt(nxt);
-				
-				res = false;
 			}
 		}
 		
 		return res;
 	}
-	
+
+	// Envoi du programme
+	public void sendProgram(String program, BluetoothSocket socket) {
+		sendingProgram = true;
+		
+		program = "###" + program + "###";
+		
+		try {
+			socket.getOutputStream().write(program.getBytes());
+		} catch (IOException e) {
+			e.printStackTrace();
+			MainActivity.showError(activity, "Erreur lors de l'envoi du programme à " + nxts.get(sockets.indexOf(socket)).getName() + ".");
+		}
+		
+		sendingProgram = false;
+	}
+
 	// Modifie la pose du Myo associé au connecteur
 	public void setPose(String pose) {
 		this.pose = pose;
